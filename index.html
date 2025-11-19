@@ -144,6 +144,21 @@
       padding: 16px;
       text-align: center;
     }
+    .coco-main {
+  width: 160px;
+  height: auto;
+  margin-top: 10px;
+  margin-bottom: 12px;
+  display: block;
+  animation: float 2.2s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}
+
   </style>
 </head>
 <body>
@@ -160,6 +175,12 @@
     <div class="bubble">
       오늘 어떤 운세가 궁금해유?
     </div>
+    <!-- 여기 코코 이미지 추가 -->
+<img src="images/coco.png" alt="코코" class="coco-main" />
+
+<div class="category-list">
+  ...
+</div>
 
     <div class="category-list">
       <button class="category-btn active" data-category="all">전체</button>
