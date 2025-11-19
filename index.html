@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>코코의 소심한 오늘 운세</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      margin: 0;
+      font-family: "Pretendard", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f7ffe5;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    header {
+      width: 100%;
+      max-width: 900px;
+      padding: 20px 24px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin: 0;
+      color: #5a4a30;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    .coco-img {
+      width: 90px;
+      height: auto;
+    }
+
+    main {
+      width: 100%;
+      max-width: 900px;
+      padding: 0 24px 40px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .bubble {
+      background-color: #fff9d9;
+      border-radius: 20px;
+      padding: 16px 20px;
+      font-size: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    }
+
+    .category-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .category-btn {
+      border: none;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .category-btn.active {
+      background-color: #ffe67a;
+      font-weight: 600;
+    }
+
+    .draw-btn {
+      margin-top: 8px;
+      border: none;
+      padding: 12px 26px;
+      border-radius: 999px;
+      background-color: #ffb84d;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .draw-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .result-card {
+      width: 100%;
+      max-width: 600px;
+      background-color: #fffdf4;
+      border-radius: 18px;
+      padding: 20px 22px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+    }
+
+    .result-card.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .result-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #5a4a30;
+    }
+
+    .result-main {
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    .result-meta {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    footer {
+      font-size: 0.75rem;
+      color: #aaa;
+      margin-top: auto;
+      padding: 16px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>코코의 소심한 오늘 운세</h1>
+      <div class="subtitle">있잖아… 내랑 오늘 운세 뽑아볼래유?</div>
+    </div>
+    <!-- 코코 이미지 경로는 직접 넣으세요 -->
+    <!-- <img src="images/coco.png" alt="코코" class="coco-img" /> -->
+  </header>
+
+  <main>
+    <div class="bubble">
+      오늘 어떤 운세가 궁금해유?
+    </div>
+
+    <div class="category-list">
+      <button class="category-btn active" data-category="all">전체</button>
+      <button class="category-btn" data-category="love">연애</button>
+      <button class="category-btn" data-category="study">학업</button>
+      <button class="category-btn" data-category="work">일·알바</button>
+      <button class="category-btn" data-category="social">인간관계</button>
+    </div>
+
+    <button class="draw-btn" id="drawBtn">코코야, 오늘 운세 알려줘!</button>
+
+    <section class="result-card" id="resultCard">
+      <div class="result-title">오늘의 한 줄 운세</div>
+      <div class="result-main" id="fortuneText">
+        버튼을 눌러 코코에게 오늘 운세를 물어보세요.
+      </div>
+      <div class="result-meta">
+        <div id="luckyItem">행운 아이템: -</div>
+        <div id="luckyColor">행운 색: -</div>
+        <div id="cocoMessage">코코의 소심한 한 마디: -</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    비공식 팬 사이트 · 상업적 이용 없음
+  </footer>
+
+  <script>
+    const fortunes = {
+      love: [
+{
+  text: "오늘은 누군가가 당신의 작은 행동을 귀엽다고 생각할 거예요.",
+  item: "작은 머리핀",
+  color: "살구색",
+  msg: "있잖아… 너무 티 안 나게 잘해보자유. 그게 더 설레유."
+},
+{
+  text: "오해가 풀리거나, 편하게 대화하기 좋은 날이에요.",
+  item: "달콤한 간식",
+  color: "코랄색",
+  msg: "말 한 번 걸어보는 게 생각보다 쉬울지도 몰라유."
+},
+{
+  text: "마음이 따뜻해지는 메시지를 받을 수 있어요.",
+  item: "휴대폰 배경화면 변경",
+  color: "따뜻한 노랑",
+  msg: "괜히 혼자 설레도 괜찮아유… 그게 또 즐거운 거니까."
+},
+{
+  text: "평소보다 매력이 잘 드러나는 날이에요.",
+  item: "밝은 컬러 옷",
+  color: "연한 민트",
+  msg: "조금만 당당하면… 오늘 분위기 딱 좋아질 거 같아유."
+},
+{
+  text: "기대 안 한 사람에게 호감 신호를 받을 수 있어요.",
+  item: "향기 좋은 핸드크림",
+  color: "라벤더",
+  msg: "어색하면 웃어유. 그게 제일 좋은 신호라유."
+},
+
+        {
+          text: "오늘은 괜히 설레는 말을 듣게 될지도 몰라요.",
+          item: "따뜻한 음료 한 잔",
+          color: "부드러운 크림색",
+          msg: "있잖아… 괜찮으면 먼저 인사해보는 건 어떠유?"
+        },
+        {
+          text: "마음에 두고 있던 사람과 자연스럽게 대화가 트일 수 있어요.",
+          item: "향기 좋은 립밤",
+          color: "연한 분홍색",
+          msg: "너무 긴장하면 말이 안 나와유. 그냥 평소 말투로 해봐유."
+        }
+
+      ],
+      study: [
+        {
+          text: "머리가 잘 돌아가는 날! 미뤄둔 문제를 풀어보기 좋아요.",
+          item: "형광펜 한 자루",
+          color: "연두색",
+          msg: "조금만 더 하면, 나중에 내가 나한테 고맙다 할 거 같지 않유?"
+        },
+        {
+          text: "짧게라도 책상에 앉으면 생각보다 많은 걸 해낼 수 있어요.",
+          item: "조용한 음악 플레이리스트",
+          color: "하늘색",
+          msg: "10분만 하자고 시작하면, 은근 더 하게 된다구유."
+        },
+{
+  text: "짧게 집중해도 효율이 아주 좋은 날이에요.",
+  item: "5분 타이머",
+  color: "파스텔 블루",
+  msg: "아무것도 하기 싫어도 5분만 해보면 기세가 붙는다구유."
+},
+{
+  text: "공부한 내용이 유독 잘 기억에 남는 날입니다.",
+  item: "깔끔한 노트 정리",
+  color: "초록빛 청색",
+  msg: "정리 한 번 해두면 나중에 엄청 편해질 거 같아유."
+},
+{
+  text: "막혔던 부분이 갑자기 이해될 수 있어요.",
+  item: "문제집 한 페이지",
+  color: "연노랑",
+  msg: "포기하려던 부분, 딱 한 번만 다시 보면 풀릴지도 몰라유."
+},
+{
+  text: "평소보다 글·문장이 머릿속에 잘 들어오는 날이에요.",
+  item: "얇은 책 20페이지",
+  color: "크림 화이트",
+  msg: "조금만 읽어도 성취감 엄청난 거 아시죠…?"
+},
+{
+  text: "집중을 방해하던 잡생각이 줄어드는 날입니다.",
+  item: "깔끔한 책상",
+  color: "하늘색",
+  msg: "정리만 해도 반은 시작한 거라유."
+}
+
+      ],
+      work: [
+        {
+          text: "생각보다 일이 수월하게 풀리는 날이에요.",
+          item: "깔끔한 체크리스트",
+          color: "연한 회색",
+          msg: "할 일 다 못해도 괜찮아요. 한 가지만 확실히 해도 충분해유."
+        },
+{
+  text: "생각보다 일이 빠르게 끝나서 여유가 생길 수 있어요.",
+  item: "일정 체크 앱",
+  color: "카키",
+  msg: "남는 시간은 꼭 나를 위해 써줘유."
+},
+{
+  text: "동료가 은근히 도움을 줄 수도 있는 날이에요.",
+  item: "따뜻한 음료 한 잔",
+  color: "회색 톤",
+  msg: "고맙다는 말 한 마디면 분위기가 좋아진다유."
+},
+{
+  text: "쿨하게 넘길 수 있는 여유가 생기는 날입니다.",
+  item: "간단한 산책",
+  color: "연베이지",
+  msg: "너무 잘하려고 하지 말구… 오늘은 숨 좀 돌려유."
+},
+{
+  text: "해야 할 일을 우선순위대로 잘 정리할 수 있어요.",
+  item: "체크리스트 메모",
+  color: "연보라",
+  msg: "조금만 나누면 훨씬 덜 버겁다유."
+},
+{
+  text: "새로운 아이디어나 해결책이 번뜩일 수 있어요.",
+  item: "간단 메모장",
+  color: "밝은 노랑",
+  msg: "생각 떠오르면 바로 적어유. 금방 사라진다구유."
+}
+
+
+      ],
+      social: [
+        {
+          text: "당신을 은근히 챙겨주는 사람이 주변에 많아요.",
+          item: "고마운 사람에게 보내는 짧은 메시지",
+          color: "주황색",
+          msg: "고맙다는 말, 소심하게라도 한 번 해봐유."
+        },
+{
+  text: "오랜만에 반가운 연락을 받을 수 있어요.",
+  item: "짧은 안부 인사",
+  color: "피치 오렌지",
+  msg: "먼저 연락해도 괜찮아유. 누가 먼저냐 중요한 거 아니에유."
+},
+{
+  text: "사람들과의 대화가 부드럽게 흘러가는 날입니다.",
+  item: "부드러운 말투",
+  color: "연초록",
+  msg: "상대가 말할 때 고개 끄덕여주면 분위기 좋아져유."
+},
+{
+  text: "괜히 웃음을 주고받을 일이 생길 수 있어요.",
+  item: "재밌는 밈 하나",
+  color: "밝은 주황",
+  msg: "소심하게라도 웃어주면 그게 제일 좋은 신호라유."
+},
+{
+  text: "부담 없이 솔직해질 수 있는 타이밍이에요.",
+  item: "솔직한 한 마디",
+  color: "코발트 블루",
+  msg: "말 돌리기보다 가볍게 말하는 게 더 좋을 때도 있더라구유."
+},
+{
+  text: "생각보다 사람들이 당신을 편하게 느끼는 날입니다.",
+  item: "편안한 옷차림",
+  color: "흰색",
+  msg: "오늘은 너무 걱정 안 해도 돼유. 당신 무던히 괜찮은 사람이에유."
+}
+
+      ]
+    };
+
+    // 전체(all) = 모든 카테고리 합치기
+    const allFortunes = [
+      ...fortunes.love,
+      ...fortunes.study,
+      ...fortunes.work,
+      ...fortunes.social
+    ];
+
+    const categoryButtons = document.querySelectorAll(".category-btn");
+    let currentCategory = "all";
+
+    categoryButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        categoryButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentCategory = btn.dataset.category;
+      });
+    });
+
+    function getRandomFortune() {
+      let list;
+      switch (currentCategory) {
+        case "love":
+          list = fortunes.love;
+          break;
+        case "study":
+          list = fortunes.study;
+          break;
+        case "work":
+          list = fortunes.work;
+          break;
+        case "social":
+          list = fortunes.social;
+          break;
+        default:
+          list = allFortunes;
+      }
+      const idx = Math.floor(Math.random() * list.length);
+      return list[idx];
+    }
+
+    const drawBtn = document.getElementById("drawBtn");
+    const resultCard = document.getElementById("resultCard");
+    const fortuneText = document.getElementById("fortuneText");
+    const luckyItem = document.getElementById("luckyItem");
+    const luckyColor = document.getElementById("luckyColor");
+    const cocoMessage = document.getElementById("cocoMessage");
+
+    drawBtn.addEventListener("click", () => {
+      const f = getRandomFortune();
+      fortuneText.textContent = f.text;
+      luckyItem.textContent = "행운 아이템: " + f.item;
+      luckyColor.textContent = "행운 색: " + f.color;
+      cocoMessage.textContent = "코코의 소심한 한 마디: " + f.msg;
+      resultCard.classList.add("show");
+    });
+  </script>
+</body>
+</html>
